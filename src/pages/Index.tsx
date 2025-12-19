@@ -4,10 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Calendar } from '@/components/ui/calendar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeLocation, setActiveLocation] = useState(0);
+  const [bookingDate, setBookingDate] = useState<Date | undefined>(new Date());
+  const [trialDialogOpen, setTrialDialogOpen] = useState(false);
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
 
   const practices = [
     {
@@ -153,7 +161,11 @@ const Index = () => {
             <a href="#locations" className="hover:text-primary transition-colors">Студии</a>
             <a href="#contacts" className="hover:text-primary transition-colors">Контакты</a>
           </div>
-          <Button>Записаться</Button>
+          <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>Записаться</Button>
+            </DialogTrigger>
+          </Dialog>
         </div>
       </nav>
 
@@ -167,13 +179,145 @@ const Index = () => {
             Три студии в центре Москвы, профессиональные преподаватели и разнообразие направлений.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" className="text-lg px-8">
-              <Icon name="Calendar" className="mr-2" size={20} />
-              Записаться на занятие
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Пробное занятие
-            </Button>
+            <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="text-lg px-8">
+                  <Icon name="Calendar" className="mr-2" size={20} />
+                  Записаться на занятие
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">Запись на занятие</DialogTitle>
+                  <DialogDescription>
+                    Выберите дату, время и направление йоги
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  <div className="space-y-2">
+                    <Label>Выберите дату</Label>
+                    <Calendar
+                      mode="single"
+                      selected={bookingDate}
+                      onSelect={setBookingDate}
+                      className="rounded-md border"
+                      disabled={(date) => date < new Date()}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Направление</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите практику" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hatha">Хатха йога</SelectItem>
+                        <SelectItem value="vinyasa">Виньяса флоу</SelectItem>
+                        <SelectItem value="yin">Инь йога</SelectItem>
+                        <SelectItem value="ashtanga">Аштанга йога</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Время</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите время" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="07:00">07:00 - Утренняя практика</SelectItem>
+                        <SelectItem value="09:30">09:30 - Утренняя практика</SelectItem>
+                        <SelectItem value="12:00">12:00 - Дневная практика</SelectItem>
+                        <SelectItem value="18:00">18:00 - Вечерняя практика</SelectItem>
+                        <SelectItem value="19:30">19:30 - Вечерняя практика</SelectItem>
+                        <SelectItem value="20:30">20:30 - Вечерняя практика</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Студия</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите студию" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="center">Студия «Центр» - м. Пушкинская</SelectItem>
+                        <SelectItem value="park">Студия «Парк» - м. Парк Культуры</SelectItem>
+                        <SelectItem value="embankment">Студия «Набережная» - м. Кропоткинская</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Separator />
+                  <div className="space-y-4">
+                    <Label>Ваши данные</Label>
+                    <div className="grid gap-4">
+                      <Input placeholder="Имя" />
+                      <Input type="tel" placeholder="Телефон" />
+                      <Input type="email" placeholder="Email" />
+                    </div>
+                  </div>
+                  <Button className="w-full" size="lg" onClick={() => setBookingDialogOpen(false)}>
+                    Подтвердить запись
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={trialDialogOpen} onOpenChange={setTrialDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" variant="outline" className="text-lg px-8">
+                  Пробное занятие
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl">Пробное занятие</DialogTitle>
+                  <DialogDescription>
+                    Первое занятие со скидкой 50%. Заполните форму, и мы свяжемся с вами для подбора удобного времени.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Icon name="Sparkles" className="text-accent" size={24} />
+                      <span className="font-semibold text-lg">600 ₽</span>
+                      <span className="text-sm text-muted-foreground line-through">1 200 ₽</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Включает коврик, реквизит и консультацию преподавателя
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Выберите направление</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Какая практика вас интересует?" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hatha">Хатха йога</SelectItem>
+                        <SelectItem value="vinyasa">Виньяса флоу</SelectItem>
+                        <SelectItem value="yin">Инь йога</SelectItem>
+                        <SelectItem value="ashtanga">Аштанга йога</SelectItem>
+                        <SelectItem value="any">Не знаю, помогите выбрать</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Ваши данные</Label>
+                    <div className="space-y-3">
+                      <Input placeholder="Имя" />
+                      <Input type="tel" placeholder="Телефон" />
+                      <Input type="email" placeholder="Email (необязательно)" />
+                    </div>
+                  </div>
+                  <Button className="w-full" size="lg" onClick={() => setTrialDialogOpen(false)}>
+                    Записаться на пробное занятие
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>
